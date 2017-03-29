@@ -408,6 +408,42 @@ def scoreCalc(sequence_dictionary, TF_list, PWM_dictionary, score_data, perc=25)
     return output
 
 def ElemeNT_scoring(sequence_dictionary,category,motif_list,PFM_dictionary,score_cutoff,filepath):
+    """Calculate ElemeNT scores for the k-mers of given sequences against the desired position
+    weight matrices
+
+    Arguments
+    ----------
+    sequence_dictionary : dictionary
+        dictionary of sequences
+    category : string
+        name of set of promoters
+    motif_list : list
+        list of motifs
+    PFM_dictionary : dictionary
+        dictionary of position frequency matrices (PFMs)
+    score_cutoff : dictionary
+        dictionary of ElemeNT score cutoffs determined in Sloutskin, et al.
+    filepath : string
+        current working directory
+
+    Returns
+    -------
+    output : pandas dataframe
+        A dataframe listing the enhancer, tf, position of k-mer in the enhancer, and the score,
+        filtered by the score cutoff determined by the user-chosen percentile
+
+    Examples
+    --------
+    >>> output = ElemeNT_scoring(promoters,'promoters',pmotif_list,pPFM,ES_cutoff,os.getcwd())
+    >>> output.head(5)
+        sequence    motif   position    score
+    0   ECSIT_1     BREd    71  0.6065
+    1   Fhos_4  BREd    32  0.9317
+    2   CG33552_1   BREd    58  0.5349
+    3   CG33552_1   BREd    61  0.7859
+    4   mrt_2   BREd    63  0.5518
+    """
+
     bases = ['A','C','G','T']
     base2index = dict([reversed(x) for x in enumerate(bases)])
     
