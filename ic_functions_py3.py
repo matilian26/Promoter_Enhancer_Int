@@ -407,6 +407,29 @@ def scoreCalc(sequence_dictionary, TF_list, PWM_dictionary, score_data, perc=25)
 
     return output
 
+def ElemeNT_scoring(sequence_dictionary,category,motif_list,PFM_dictionary,score_cutoff,filepath):
+    bases = ['A','C','G','T']
+    base2index = dict([reversed(x) for x in enumerate(bases)])
+    
+    output = pd.DataFrame(columns=['sequence','motif','position','score'])
+    with open('%s/patserOut/ElemeNT_output_%s.txt' %(filepath,category),'w') as f:
+        for motif in motif_list:
+            for seq_name, sequence in sequence_dictionary.items():
+                for i in range(len(sequence)-PFM_dictionary[motif].shape[0]+1):
+                    subsequence = sequence[i:i+PFM_dictionary[motif].shape[0]]
+                    if 'N' in subsequence:
+                        continue
+                    temp_score = 1
+                    for position, base in enumerate(subsequence):
+                        temp_score = temp_score*PFM_dictionary[motif][position,base2index[base]]/max(PFM_dictionary[motif][position,:])
+                    if np.round(temp_score,2) > score_cutoff[motif]:
+                        f.write('%s\t%s\t%s\t%.4f\n' %(seq_name.replace('-','_'), motif, i+1, temp_score))
+    output = pd.read_csv('element_output.txt',sep='\t',header=None)
+    output.columns = ['sequence','motif','position','score']
+    output[['score']] = output[['score']].astype(float)
+    
+    return output
+
 def ICdictionary(PWM):
     """Create dictionary that maps TF to the information content of its PWM
 
