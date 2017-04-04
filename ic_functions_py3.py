@@ -77,13 +77,12 @@ def geneIDdictionary(filename):
                 IDs = [] # list of all possible identifiers associated with gene
                 if not m.group(1): # if Dmel
                     NametoFBid[m.group(2)] = m.group(3)
-                    IDs = [m.group(3),m.group(5)]
+                    IDs = [m.group(2),m.group(3),m.group(5)]
                     if m.group(4):
                         IDs.extend(str(m.group(4)).split(','))
                     if m.group(6):
                         IDs.extend(str(m.group(6)).split(','))
                     NametoIDs[m.group(2)] = IDs
-                    geneID[m.group(2)] = [m.group(2)]
                 for id in IDs:
                     if id in geneID:
                         geneID[id].append(m.group(2))
