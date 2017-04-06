@@ -202,8 +202,8 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,no
                 # Save the last fully concatenated PWM or sequence to the dictionary
                 if save == 1 and len(tempdictionary) > 0:
                     # if the PWM is horizontal, switch to vertical orientation
-                    if form is 'PWM' and orientation is 'h':
-                        tempdictionary = np.transpose(tempdictionary)
+                    # if form is 'PWM' and orientation is 'h':
+                    #     tempdictionary = np.transpose(tempdictionary)
                     # If (Case 1) dictionary is empty
                     #    (Case 2) the last key is NOT a key in dictionary
                     #    (Case 3) the last key is a key in the dictionary and is FlyReg
@@ -223,7 +223,10 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,no
                     'FlyReg' in PWMnames[Keys[-1]] and \
                     sum(tempdictionary[2,:]) > sum(dictionary[Keys[-1]][2,:]) and \
                     'FlyReg' in tempPWMnames[-1])):
-                        dictionary[Keys[-1]] = tempdictionary
+                        if form is 'PWM' and orientation is 'h':
+                            dictionary[Keys[-1]] = np.transpose(tempdictionary)
+                        else:
+                            dictionary[Keys[-1]] = tempdictionary
                         if form is 'PWM':
                             PWMnames[Keys[-1]] = tempPWMnames[-1]
                 # Save a new key
@@ -275,7 +278,10 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,no
                         tempdictionary = line.strip()
     # if there is only one PWM or sequence in the file / for the last item in the file
     if len(dictionary) == 0 and len(tempdictionary) > 0 or save == 1:
-        dictionary[Keys[-1]] = tempdictionary
+        if form is 'PWM' and orientation is 'h':
+            dictionary[Keys[-1]] = np.transpose(tempdictionary)
+        else:
+            dictionary[Keys[-1]] = tempdictionary
         if form is 'PWM':
             PWMnames[Keys[-1]] = tempPWMnames[-1]
 
