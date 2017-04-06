@@ -93,7 +93,7 @@ def geneIDdictionary(filename):
 
     return geneID, NametoIDs, NametoFBid
 
-def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,pseudocount=0.01,nonmatch=0,sep=','):
+def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,nonmatch=0,sep=','):
     """Read FASTA file into dictionary
 
     Arguments
@@ -120,9 +120,6 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,ps
     fullname : integer
         1 (default) if the full header line of the FASTA file needs to be saved (useful for PWMs)
         0 otherwise
-    pseudocount : float, default = 0.01
-        a pseudocount of 0.01 weighted by a priori probability of the corresponding base is
-        added to each element
     nonmatch : string
         0 (default) if you don't want to print the header lines that do not match the regex
         'print' if you do want to print the header lines that fail to match the regex
@@ -198,11 +195,6 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,ps
     checkFBgn = [] # list of FlyBaseIDs that should be check due to multiple gene references
     save = 0 # whether the PWM or sequence should be saved
 
-    # Set the prior: weight the given pseudocount with the background frequencies
-    q = [0.297, 0.203, 0.203, 0.297] # background frequencies for DNA based in intergenic region
-                                     # the order of the bases is A C G T
-    weighted_pscount = [pseudocount*x for x in q]
-
     # Open and parse the FASTA file
     with open(filename) as f:
         for line in f:
@@ -263,8 +255,8 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,ps
                 if len(tempdictionary) > 0:
                     if form is 'PWM':
                         tempdictionary = np.vstack((tempdictionary, \
-                                                    np.array([float(val)+pscount for val,pscount in \
-                                                    zip(line.split(),weighted_pscount)])))
+                                                    np.array([float(val) for val in \
+                                                    line.split()])))
                     elif form is 'list_num':
                         tempdictionary += [float(x) for x in line.strip().split(sep)]
                     elif form is 'list_str':
@@ -273,8 +265,8 @@ def readFASTA(filename,form,orientation,geneID,regexKey,nameasis=0,fullname=1,ps
                         tempdictionary += line.strip()
                 else:
                     if form is 'PWM':
-                        tempdictionary = np.array([float(val)+pscount for val,pscount in \
-                                            zip(line.split(),weighted_pscount)])
+                        tempdictionary = np.array([float(val) for val in \
+                                            line.split()])
                     elif form is 'list_num':
                         tempdictionary = [float(x) for x in line.strip().split(sep)]
                     elif form is 'list_str':
